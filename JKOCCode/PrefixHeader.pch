@@ -1,0 +1,51 @@
+//
+//  PrefixHeader.pch
+//  JKOCCode
+//
+//  Created by silence on 2017/3/3.
+//  Copyright © 2017年 silence. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#import <objc/runtime.h>
+#import <objc/message.h>
+#import "AFNetworking.h"
+#import "Masonry.h"
+#import "UIImageView+WebCache.h"
+#import "UIButton+QuickCreate.h"
+//#import "UIImage+QRImage.h"
+#import "NetworkManager.h"
+#import "ShouBaNetInterface.h"
+#import "ZXingObjC.h"
+#import "YYKit.h"
+#import <Photos/Photos.h>
+#import <MBProgressHUD/MBProgressHUD.h>
+#import <Charts/Charts-Swift.h>
+#import "JYChart.h"
+
+#pragma mark -- 宏定义
+
+//-------------------------- 宏
+
+#define DEVELOP  1   //0发布 1开发 2测试环境
+
+#define DEBUG    1   //0发布 1开发
+
+#ifdef  DEBUG
+#define JY_Fun_Log(fmt, ...) NSLog((@"%s," "[lineNum:%d]" fmt) , __FUNCTION__, __LINE__, ##__VA_ARGS__); //带函数名和行数
+#define JY_L_Log(fmt, ...) NSLog((@"=== [lineNum:%d]" fmt), __LINE__, ##__VA_ARGS__);  //带行数
+#define JY_Log(fmt, ...) NSLog((fmt), ##__VA_ARGS__); //不带函数名和行数
+#else
+#define JY_Fun_Log(fmt, ...)
+#define JY_L_Log(fmt, ...)
+#define JY_Log(fmt, ...)
+#endif
+
+// 屏幕宽、长
+#define SCREENWIDTH   ([UIScreen mainScreen].bounds.size.width<[UIScreen mainScreen].bounds.size.height?[UIScreen mainScreen].bounds.size.width:[UIScreen mainScreen].bounds.size.height)
+#define SCREENHEIGHT  ([UIScreen mainScreen].bounds.size.height>[UIScreen mainScreen].bounds.size.width?[UIScreen mainScreen].bounds.size.height:[UIScreen mainScreen].bounds.size.width)
+
+
+#endif /* PrefixHeader_pch */
