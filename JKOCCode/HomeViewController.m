@@ -22,6 +22,7 @@
     [super viewDidLoad];
     self.navigationBar = self.navigationController.navigationBar;
     self.navigationBar.barTintColor = UIColorHex(0x2183d3);
+    [self.view addSubview:self.tableView];
 }
 
 - (UITableView *)tableView{
