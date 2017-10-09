@@ -28,8 +28,6 @@
 //    [operstion start];
 //    [operstion waitUntilFinished];
 //    return operstion.responseData;
-    
-    
 //    [self requestDataReloadTable];
     
 }

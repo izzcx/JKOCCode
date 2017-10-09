@@ -9,6 +9,7 @@
 #import "TestViewController.h"
 #import "JKBaseGraphicsView.h"
 #import "ShouBaCounterView.h"
+#import "NSNull+AddMethod.h"
 
 @interface TestViewController ()
 
@@ -19,7 +20,6 @@
 @property (nonatomic, strong) UILabel *titleLabel;
 
 @property (nonatomic, strong) ShouBaCounterView *counterView;
-
 
 @end
 
@@ -43,16 +43,22 @@
 
     CGRect textSize = [textContent boundingRectWithSize: CGSizeMake(1000, INFINITY) options: NSStringDrawingUsesLineFragmentOrigin attributes: textFontAttributes context: nil];
     JY_Log(@"test ----%@",NSStringFromCGRect(textSize));
-    
-    JKBaseGraphicsView *baseGraphics = [[JKBaseGraphicsView alloc] initWithFrame:CGRectMake(0, 64, SCREENWIDTH, 400)];
-    baseGraphics.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:baseGraphics];
+//    
+//    JKBaseGraphicsView *baseGraphics = [[JKBaseGraphicsView alloc] initWithFrame:CGRectMake(0, 64, SCREENWIDTH, 400)];
+//    baseGraphics.backgroundColor = [UIColor whiteColor];
+//    [self.view addSubview:baseGraphics];
     
     
     NSString *testString = @"mknsikcksl";
     NSString *subString = [testString substringWithRange:NSMakeRange(0, 0)];
     
     JY_Log(@"----- substing ---- %@",subString);
+    
+    NSNull *null = [[NSNull alloc] init];
+    id value = [null objectForKey:@"pic"];
+    
+    NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithCapacity:1];
+//    [dic setObject:value forKey:@"pic"];
     
 }
 

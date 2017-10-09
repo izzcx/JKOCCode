@@ -12,7 +12,7 @@
 #import "JYFiltResultController.h"
 
 @interface InterfaceViewController ()<UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate,
-UISearchControllerDelegate, UISearchResultsUpdating>
+UISearchControllerDelegate, UISearchResultsUpdating,UICollectionViewDelegate,UICollectionViewDataSource,UIScrollViewDelegate>
 
 @property (nonatomic, strong) ShapeView *shapeView;
 @property (nonatomic, strong) UILabel *attLablel;
@@ -27,6 +27,10 @@ UISearchControllerDelegate, UISearchResultsUpdating>
 
 @property (nonatomic, strong) UIImageView *imgView;
 
+@property (nonatomic, strong) UICollectionView *qrCollectionView;
+@property (nonatomic, strong) UILabel *pageLabel;
+@property (nonatomic, assign) CGFloat offSet;
+
 @end
 
 @implementation InterfaceViewController
@@ -35,11 +39,102 @@ UISearchControllerDelegate, UISearchResultsUpdating>
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"Interface";
-    
-    [self addImgView];
-    
+    [self.view addSubview:self.qrCollectionView];
+    [self.view addSubview:self.pageLabel];
+    self.pageLabel.text = @"1/10";
+    [self.qrCollectionView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [self.qrCollectionView removeObserver:self forKeyPath:@"contentOffset"];
+}
+
+#pragma mark ---- UIColloctionView
+
+- (UILabel *)pageLabel{
+    if (!_pageLabel) {
+        _pageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, kScreenHeight-40, kScreenWidth, 40)];
+        _pageLabel.textAlignment = NSTextAlignmentCenter;
+        _pageLabel.textColor = [UIColor blackColor];
+    }
+    return _pageLabel;
+}
+
+- (UICollectionView *)qrCollectionView{
+    if (!_qrCollectionView) {
+        CGFloat itemHg = kScreenHeight-64;
+        CGFloat itemWd = kScreenWidth-30;
+        UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+        flowLayout.itemSize = CGSizeMake(itemWd, itemHg);
+        flowLayout.minimumInteritemSpacing = 20;
+        flowLayout.minimumLineSpacing = 30;
+        flowLayout.sectionInset = UIEdgeInsetsMake(0, 15, 0, 15);
+        flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        
+        _qrCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 64, kScreenWidth, kScreenHeight-64-40) collectionViewLayout:flowLayout];
+        _qrCollectionView.dataSource = self;
+        _qrCollectionView.delegate = self;
+        _qrCollectionView.scrollEnabled = YES;
+        _qrCollectionView.pagingEnabled = YES;
+        _qrCollectionView.backgroundColor = [UIColor whiteColor];
+        _qrCollectionView.showsVerticalScrollIndicator = NO;
+        _qrCollectionView.showsHorizontalScrollIndicator = NO;
+        
+        [_qrCollectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"collect_cell"];
+    }
+    return _qrCollectionView;
+}
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    
+    return 10;
+}
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+    NSString *identify = @"collect_cell";
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identify forIndexPath:indexPath];
+    cell.contentView.backgroundColor = [UIColor colorWithRed:arc4random()%255/255.0
+                                                       green:arc4random()%255/255.0
+                                                        blue:arc4random()%255/255.0
+                                                       alpha:1.0];
+    return cell;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+
+    if ([keyPath isEqualToString:@"contentOffset"]){
+        
+        self.offSet = self.qrCollectionView.contentOffset.x;
+        CGFloat contentWidth = self.qrCollectionView.contentSize.width;
+        CGFloat offset = self.qrCollectionView.contentOffset.x;
+        NSInteger index = offset/SCREENWIDTH + 1;
+        NSInteger count = contentWidth/SCREENWIDTH;
+        NSString *pageNum = [NSString stringWithFormat:@"%ld/%ld",index,count];
+        self.pageLabel.text = pageNum;
+        
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+    
+//    if (!decelerate) {
+//        CGFloat contentWidth = self.qrCollectionView.contentSize.width;
+//        CGFloat offset = self.offSet;
+//        NSInteger index = offset/SCREENWIDTH + 1;
+//        NSInteger count = contentWidth/SCREENWIDTH;
+//        NSString *pageNum = [NSString stringWithFormat:@"%ld/%ld",index,count];
+//        self.pageLabel.text = pageNum;
+//
+//    }
+}
+
+#pragma mark ------ 加水印 UIImage 显示
 - (void)addImgView{
     
     [self.view addSubview:self.imgView];
@@ -90,6 +185,7 @@ UISearchControllerDelegate, UISearchResultsUpdating>
     });
 }
 
+#pragma mark ---- 图片上绘制文字
 -(UIImage *)addText:(UIImage *)img text:(NSString *)text1
 {
     //get image width and height
@@ -112,11 +208,35 @@ UISearchControllerDelegate, UISearchResultsUpdating>
     return [UIImage imageWithCGImage:imageMasked];
 }
 
-- (void)addTableView{
-    self.tableView.backgroundColor = [UIColor grayColor];
-    [self.view addSubview:self.tableView];
+#pragma mark ---- 跳动球动画
+
+- (void)jumpAnimation{
+    
+    JumpAnimationView *jumpView = [[JumpAnimationView alloc] initWithFrame:CGRectMake(0, 0, 70, 30)];
+    jumpView.backgroundColor = [UIColor blackColor];
+    jumpView.ballBackground = [UIColor whiteColor];
+    [self.view addSubview:jumpView];
+    
+    [self buttonAssociatedObject];
+    [self.view addSubview:self.shapeView];
+
 }
 
+#pragma mark ---- NSMutableAttributedString
+
+- (void)attributeStringShow{
+    
+    NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:@"￥112.30"];
+    [attributeString addAttribute:NSFontAttributeName
+                            value:[UIFont systemFontOfSize:30.0f]
+                            range:NSMakeRange(1, 3)];
+    
+    self.attLablel.attributedText = attributeString;
+    [self.view addSubview:self.attLablel];
+
+}
+
+#pragma mark ----- UISearchController
 - (void)filtViewController{
     
     JYFiltResultController *resultVC = [[JYFiltResultController alloc] init];
@@ -133,37 +253,20 @@ UISearchControllerDelegate, UISearchResultsUpdating>
     self.searchVC.dimsBackgroundDuringPresentation = NO; // default is YES
     self.searchVC.searchBar.delegate = self; // so we can monitor text changes + others
     self.definesPresentationContext = YES;
-
-}
-
-- (void)jumpAnimation{
     
-    JumpAnimationView *jumpView = [[JumpAnimationView alloc] initWithFrame:CGRectMake(0, 0, 70, 30)];
-    jumpView.backgroundColor = [UIColor blackColor];
-    jumpView.ballBackground = [UIColor whiteColor];
-    [self.view addSubview:jumpView];
-    
-    [self buttonAssociatedObject];
-    [self.view addSubview:self.shapeView];
-
-}
-
-- (void)attributeStringShow{
-    
-    NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:@"￥112.30"];
-    [attributeString addAttribute:NSFontAttributeName
-                            value:[UIFont systemFontOfSize:30.0f]
-                            range:NSMakeRange(1, 3)];
-    
-    self.attLablel.attributedText = attributeString;
-    [self.view addSubview:self.attLablel];
-
 }
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
 
     
 }
+
+#pragma mark ---- tableView
+- (void)addTableView{
+    self.tableView.backgroundColor = [UIColor grayColor];
+    [self.view addSubview:self.tableView];
+}
+
 
 - (UITableView *)tableView{
     if (!_tableView) {
@@ -234,7 +337,7 @@ UISearchControllerDelegate, UISearchResultsUpdating>
     return _imgView;
 }
 
-//UIButton 属性关联
+#pragma mark --- UIButton 属性关联
 - (void)buttonAssociatedObject{
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setBackgroundColor:[UIColor redColor]];

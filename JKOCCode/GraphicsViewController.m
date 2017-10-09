@@ -40,7 +40,7 @@
     lineChartView.lineWidth = 1.0;
     lineChartView.titleX = @"金额（元）";
     lineChartView.titleY = nil;
-    [self.view addSubview:lineChartView];
+//    [self.view addSubview:lineChartView];
     
     NSMutableArray *lineNodesX = [NSMutableArray arrayWithCapacity:6];
     for (int i = 0; i < 6; i++) {

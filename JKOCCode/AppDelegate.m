@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "ExampleListViewController.h"
 #import "TestViewController.h"
+#import "HomeViewController.h"
 
 @interface AppDelegate ()
 
@@ -22,18 +23,26 @@
     
     ExampleListViewController *exampleListVC = [[ExampleListViewController alloc] init];
     TestViewController *testVC = [[TestViewController alloc] init];
+    HomeViewController *homeVC = [[HomeViewController alloc] init];
+    
     UINavigationController *firstNavVC = [[UINavigationController alloc] initWithRootViewController:exampleListVC];
     UINavigationController *secondNavVC = [[UINavigationController alloc] initWithRootViewController:testVC];
+    UINavigationController *thirdNavVC = [[UINavigationController alloc] initWithRootViewController:homeVC];
     
     UITabBarItem *item0 = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemFeatured tag:0];
     item0.title = @"ui";
     UITabBarItem *item1 = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemSearch tag:1];
     item1.title = @"net";
     item1.badgeValue = @"1";
+    UITabBarItem *item2 = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemMore tag:2];
+    item2.title = @"home";
+    
     firstNavVC.tabBarItem = item0;
     secondNavVC.tabBarItem = item1;
+    thirdNavVC.tabBarItem = item2;
+    
     UITabBarController *tabBarVC = [[UITabBarController alloc] init];
-    tabBarVC.viewControllers = [NSArray arrayWithObjects:firstNavVC,secondNavVC, nil];
+    tabBarVC.viewControllers = [NSArray arrayWithObjects:firstNavVC,secondNavVC,thirdNavVC, nil];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
